@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>店员模块</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/min.css' %}">
+</head>
+<body>
+{% include 'index.html' %}
+<div id="body" class="body">
+    <form class="layui-form" action="">
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">店员名</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="name" name="name" placeholder="请输入店员名" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">薪资</label>
+                <div class="layui-input-inline" style="width: 100px;">
+                    <input type="text" id="price_min" name="price_min" placeholder="" autocomplete="off" class="layui-input"
+                           onkeyup="clearNumber(this)">
+                </div>
+                <div class="layui-form-mid">-</div>
+                <div class="layui-input-inline" style="width: 100px;">
+                    <input type="text" id="price_max" name="price_max" placeholder="" autocomplete="off" class="layui-input"
+                           onkeyup="clearNumber(this)">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">年龄</label>
+                <div class="layui-input-inline">
+                    <select id="type" name="type" lay-filter="type">
+                        <option value="" selected=""></option>
+                        <option value="男">男</option>
+                        <option value="女">女</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">老板</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="boss" name="boss" autocomplete="off" placeholder="请输入老板" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <button type="button" class="layui-btn" style="width: 150px" onclick="getStoreList()">搜索</button>
+                <button type="button" class="layui-btn" style="width: 150px" onclick="resttStoreList()">重置</button>
+            </div>
+        </div>
+    </form>
+    <table class="layui-hide" id="test" lay-filter="test"></table>
+    <script type="text/html" id="toolbarDemo">
+        <div>
+            <button type="button" class="layui-btn" onclick="window.open('/addemployee/',target='_self')">添加店员</button>
+        </div>
+    </script>
+    <script type="text/html" id="barDemo">
+        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+</div>
+</body>
+<script>
+    layui.use(['form'], function () {
+        var form = layui.form
+            , layer = layui.layer
+        form.on('submit(update)', function (data) {
+            $.ajax({
+                async: true,
+                url: '/updatestore/',
+                type: 'post',
+                headers: {"X-CSRFToken": $.cookie("csrftoken")},
+                data: data.field,
+                success: function (success) {
+                    layer.msg(success['msg'])
+                    setTimeout(function () {
+                        window.open('/store/', target = '_self')
+                    }, 800)
+                },
+                error: function (error) {
+                    layer.msg(error['msg'])
+                }
+            })
+            return false
+        });
+    });
+
+    function clearNumber(obj) {
+        obj.value = obj.value.replace(/[^\d.]/g, "");
+        obj.value = obj.value.replace(/\.{2,}/g, ".");
+        obj.value = obj.value.replace(".", "$#$").replace(/\./g, "").replace("$#$", ".");
+    }
+
+    function resttStoreList() {
+        document.getElementById('name').value = '';
+        document.getElementById('price_min').value = '';
+        document.getElementById('price_max').value = '';
+        document.getElementById('type').value = '';
+        document.getElementById('boss').value = '';
+        getStoreList()
+    }
+
+    function getStoreList() {
+        var name = document.getElementById('name').value;
+        var price_min = document.getElementById('price_min').value;
+        var price_max = document.getElementById('price_max').value;
+        var type = document.getElementById('type').value;
+        var boss = document.getElementById('boss').value;
+        var table = layui.table;
+        table.reload('test', {
+            where: {
+                'name': name,
+                'price_min': price_min,
+                'price_max': price_max,
+                'type': type,
+                'boss': boss,
+            },
+            page: {
+                curr: 1
+            }
+        }, 'data')
+    }
+
+    layui.use('table', function () {
+        var name = document.getElementById('name').value;
+        var price_min = document.getElementById('price_min').value;
+        var price_max = document.getElementById('price_max').value;
+        var type = document.getElementById('type').value;
+        var boss = document.getElementById('boss').value;
+        var table = layui.table;
+        table.render({
+            elem: '#test'
+            , height: '500'
+            , method: 'post'
+            , url: '/showemployee/'
+            , toolbar: '#toolbarDemo'
+            , where: {
+                'name': name,
+                'price_min': price_min,
+                'price_max': price_max,
+                'type': type,
+                'boss': boss,
+            }
+            , defaultToolbar: []
+            , title: '用户数据表'
+            , cols: [[
+                {field: 'id', title: 'ID', width: '10%', fixed: 'left', unresize: true, sort: true}
+                , {field: 'name', title: '店员', width: '15%'}
+                , {field: 'sex', title: '性别', width: '10%'}
+                , {field: 'age', title: '年龄', width: '10%', sort: true}
+                , {field: 'salary', title: '薪资',width: '10%',sort: true }
+                , {field: 'createTime', title: '入职时间', }
+                , {field: 'shop', title: '所属店铺', }
+                , {fixed: 'right', title: '操作', toolbar: '#barDemo', width: '10%'}
+            ]]
+            , page: true
+        });
+        table.on('tool(test)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'del') {
+                layer.confirm('确定删除该用户吗？', function (index) {
+                    $.ajax({
+                        async: true,
+                        url: '/delstore/',
+                        type: 'post',
+                        headers: {"X-CSRFToken": $.cookie("csrftoken")},
+                        data: {
+                            'id': data.id
+                        },
+                        success: function (success) {
+                            layer.msg(success['msg'])
+                            getStoreList()
+                        },
+                        error: function (error) {
+                            layer.msg(error['msg'])
+                        }
+                    })
+                    layer.close(index);
+                });
+            } else if (obj.event === 'edit') {
+                document.getElementById('confirm').style.visibility = 'visible';
+                document.getElementById('body').style.visibility = 'hidden';
+                var form = layui.form;
+                form.val("updateStore", {
+                    "id": data.id
+                    , "name": data.name
+                    , "area": data.area
+                    , "type": data.type
+                    , "boss": data.boss
+                });
+            }
+        });
+    });
+</script>
+</html>

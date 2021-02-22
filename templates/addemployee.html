@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>添加店员</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/min.css' %}">
+</head>
+<body>
+{% include 'index.html' %}
+<div class="body">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
+        <legend>添加店员</legend>
+    </fieldset>
+    <form class="layui-form layui-form-pane" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">姓名</label>
+            <div class="layui-input-block">
+                <input type="text" name="name" lay-verify="required" autocomplete="off" placeholder="请输入商铺名" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">性别</label>
+            <div class="layui-input-block">
+                <select name="sex" lay-filter="sex">
+                    <option value="男" selected="">男</option>
+                    <option value="女">女</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">年龄</label>
+            <div class="layui-input-block">
+                <input type="number" name="age" lay-verify="required" autocomplete="off" placeholder="请输入商铺面积" class="layui-input"
+                       onblur="if (value<=0){value=0}else{value=Math.floor(value)}">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">薪资</label>
+            <div class="layui-input-block">
+                <input type="text" name="salary" lay-verify="required" autocomplete="off" placeholder="请输入商铺面积" class="layui-input"
+                       onkeyup="clearNumber(this)">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">入职时间</label>
+            <div class="layui-input-inline">
+                <input type="text" class="layui-input" lay-verify="required" id="createTime" name="createTime" placeholder="年 - 月 - 日">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">店铺</label>
+            <div class="layui-input-block">
+                <select name="shopId" lay-filter="type" id="shopId" lay-verify="required" lay-search="">
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <button type="button" class="layui-btn layui-btn-primary" onclick="window.open('/employee/',target='_self')">返回</button>
+            <button type="submit" class="layui-btn" lay-submit="" lay-filter="commit">立即提交</button>
+        </div>
+    </form>
+</div>
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            async: true,
+            url: '/showallstore/',
+            type: 'post',
+            headers: {"X-CSRFToken": $.cookie("csrftoken")},
+            data: [],
+            success: function (date) {
+                jsonDate = JSON.stringify(date['data']);
+                $.each(JSON.parse(jsonDate), function (i, item) {
+                    var option = "<option value=" + item.id + ">" + item.name + "</option>";
+                    $("#shopId").append(option);
+                    renderForm();
+                    {#form.render();#}
+                });
+            },
+            error: function (msg) {
+                layer.msg(JSON.stringify(msg['msg']))
+            }
+        });
+    })
+    function renderForm() {
+        layui.use('form', function () {
+            var form = layui.form;
+            form.render();
+        });
+    }
+    function clearNumber(obj) {
+        obj.value = obj.value.replace(/[^\d.]/g, "");
+        obj.value = obj.value.replace(/\.{2,}/g, ".");
+        obj.value = obj.value.replace(".", "$#$").replace(/\./g, "").replace("$#$", ".");
+    }
+
+    layui.use(['form', 'laydate'], function () {
+        var form = layui.form
+            , layer = layui.layer
+        var laydate = layui.laydate;
+        laydate.render({
+            elem: '#createTime'
+        });
+        form.on('submit(commit)', function (data) {
+            $.ajax({
+                async: true,
+                url: '/aEmployee/',
+                type: 'post',
+                headers: {"X-CSRFToken": $.cookie("csrftoken")},
+                data: data.field,
+                success: function (success) {
+                    layer.msg(success['msg'])
+                    setTimeout(function () {
+                        window.open('/employee/', target = '_self')
+                    }, 800)
+                },
+                error: function (error) {
+                    layer.msg(error['msg'])
+                }
+            })
+            return false
+        });
+    });
+</script>
+</body>
+</html>

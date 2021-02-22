@@ -16,9 +16,23 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from shop import views
-
+from shop.admin import index
+from shop.admin import store
+from shop.admin import employee
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', views.Login.login),
-    path('userLogin/',views.Login.uLogin),
+    path('userLogin/', views.Login.uLogin),
+    path('index/', index.Index.toIndex),
+    path('store/', store.Store.store),
+    path('addstore/',store.Store.addStore),
+    path('aStore/',store.Store.aStore),
+    path('showstore/',store.Store.showStore),
+    path('delstore/',store.Store.delStore),
+    path('updatestore/',store.Store.updateStore),
+    path('employee/',employee.Employee.employee),
+    path('showemployee/',employee.Employee.showEmployee),
+    path('addemployee/',employee.Employee.aEmployee),
+    path('showallstore/',store.Store.showAllStore),
+    path('aEmployee/',employee.Employee.addEmployee),
 ]

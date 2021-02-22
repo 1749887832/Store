@@ -1,0 +1,20 @@
+.body {
+    float: left;
+    width: 180vh;
+    height: 100vh;
+    padding: 20px;
+    margin-left: 200px;
+}
+
+body .layui-input-inline input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}

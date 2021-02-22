@@ -47,10 +47,15 @@
                     headers: {"X-CSRFToken": $.cookie("csrftoken")},
                     data: {
                         'username': data.field['username'],
-                        'password':data.field['password']
+                        'password': data.field['password']
                     },
                     success: function (success) {
-                        layer.msg(success['msg'])
+                        if (success['code'] === 0) {
+                            layer.msg(success['msg'])
+                            window.open('/index/', target = '_self')
+                        } else {
+                            layer.msg(success['msg'])
+                        }
                     },
                     error: function (error) {
                         layer.msg(error['msg'])
