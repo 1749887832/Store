@@ -1,19 +1,27 @@
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.shortcuts import render
 
 from shop.admin import returnMsg
 from shop.admin.returnMsg import change
-from shop.models import shop
+from shop.models import shop, employee, goods
 
 
 class Store:
     def __init__(self):
         super().__init__()
+        self.user = None
         self.POST = None
 
+    @login_required
     def store(self):
-        return render(self, 'stroe.html')
+        user = User.objects.get(id=self.user.id)
+        context = dict()
+        context['date'] = user
+        return render(self, 'stroe.html', context)
 
+    @login_required
     def showStore(self):
         try:
             page = int(self.POST.get('page'))
@@ -39,9 +47,14 @@ class Store:
         except Exception as e:
             return JsonResponse(returnMsg.Error(msg=str(e)))
 
+    @login_required
     def addStore(self):
-        return render(self, 'addstore.html')
+        user = User.objects.get(id=self.user.id)
+        context = dict()
+        context['date'] = user
+        return render(self, 'addstore.html', context)
 
+    @login_required
     def aStore(self):
         try:
             name = self.POST.get('name')
@@ -60,14 +73,22 @@ class Store:
             print(e)
             return JsonResponse(returnMsg.Error())
 
+    @login_required
     def delStore(self):
         try:
             shopId = self.POST.get('id')
-            print(shopId)
-            return JsonResponse(returnMsg.Success(msg='删除成功'), safe=False, json_dumps_params={'ensure_ascii': False})
+            emp = employee.objects.filter(shopId=shopId)
+            if len(emp) > 0:
+                msg = '店铺含有员工不能删除'
+            else:
+                goods.objects.filter(shopId=shopId).delete()
+                shop.objects.filter(id=shopId).delete()
+                msg = '删除成功'
+            return JsonResponse(returnMsg.Success(msg=msg), safe=False, json_dumps_params={'ensure_ascii': False})
         except Exception as e:
             return JsonResponse(returnMsg.Error(msg=str(e)), safe=False, json_dumps_params={'ensure_ascii': False})
 
+    @login_required
     def updateStore(self):
         print(self)
 
@@ -88,6 +109,7 @@ class Store:
         except Exception as e:
             return JsonResponse(returnMsg.Error(msg=str(e)), safe=False, json_dumps_params={'ensure_ascii': False})
 
+    @login_required
     def showAllStore(self):
         try:
             allStore = shop.objects.all()

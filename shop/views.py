@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from shop.admin import returnMsg
@@ -30,3 +30,12 @@ class Login:
                 return JsonResponse(returnMsg.Error(msg='用户名或密码错误'))
         else:
             return render(self, 'login.html')
+
+
+class Logout:
+    def __init__(self):
+        super().__init__()
+
+    def logout(self):
+        logout(self)
+        return redirect('/login/')

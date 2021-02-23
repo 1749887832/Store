@@ -2,9 +2,129 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>添加商品</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/min.css' %}">
 </head>
 <body>
+{% include 'index.html' %}
+<div class="body">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
+        <legend>添加商铺</legend>
+    </fieldset>
+    <form class="layui-form layui-form-pane" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">商品名</label>
+            <div class="layui-input-block">
+                <input type="text" name="name" lay-verify="required" autocomplete="off" placeholder="请输入商品名" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">商品类型</label>
+            <div class="layui-input-block">
+                <select name="type" lay-filter="type">
+                    <option value="日用品" selected="">日用品</option>
+                    <option value="服装">服装</option>
+                    <option value="水果">水果</option>
+                    <option value="体育用品">体育用品</option>
+                    <option value="其他">其他</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">商品数量</label>
+            <div class="layui-input-block">
+                <input type="number" name="sum" lay-verify="required" autocomplete="off" placeholder="请输入数量" class="layui-input"
+                       onblur="if (value<=0){value=0}else{value=Math.floor(value)}">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">进价</label>
+            <div class="layui-input-block">
+                <input type="text" name="price" lay-verify="required" autocomplete="off" placeholder="请输入进价(元)" class="layui-input"
+                       onkeyup="clearNumber(this)">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">销售价</label>
+            <div class="layui-input-block">
+                <input type="text" name="per" lay-verify="required" autocomplete="off" placeholder="请输入现售价(元)" class="layui-input"
+                       onkeyup="clearNumber(this)">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">所属店铺</label>
+            <div class="layui-input-block">
+                <select name="shopId" id="shopId" lay-filter="type">
+                    <option value="" selected=""></option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <button type="button" class="layui-btn layui-btn-primary" onclick="window.open('/goods/',target='_self')">返回</button>
+            <button type="submit" class="layui-btn" lay-submit="" lay-filter="commit">立即提交</button>
+        </div>
+    </form>
+</div>
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            async: true,
+            url: '/showallstore/',
+            type: 'post',
+            headers: {"X-CSRFToken": $.cookie("csrftoken")},
+            data: [],
+            success: function (date) {
+                jsonDate = JSON.stringify(date['data']);
+                $.each(JSON.parse(jsonDate), function (i, item) {
+                    var option = "<option value=" + item.id + ">" + item.name + "</option>";
+                    $("#shopId").append(option);
+                    renderForm();
+                    {#form.render();#}
+                });
+            },
+            error: function (msg) {
+                layer.msg(JSON.stringify(msg['msg']))
+            }
+        });
+    })
 
+    function renderForm() {
+        layui.use('form', function () {
+            var form = layui.form;
+            form.render();
+        });
+    }
+
+    function clearNumber(obj) {
+        obj.value = obj.value.replace(/[^\d.]/g, "");
+        obj.value = obj.value.replace(/\.{2,}/g, ".");
+        obj.value = obj.value.replace(".", "$#$").replace(/\./g, "").replace("$#$", ".");
+    }
+
+    layui.use(['form'], function () {
+        var form = layui.form
+            , layer = layui.layer
+        form.on('submit(commit)', function (data) {
+            $.ajax({
+                async: true,
+                url: '/aGoods/',
+                type: 'post',
+                headers: {"X-CSRFToken": $.cookie("csrftoken")},
+                data: data.field,
+                success: function (success) {
+                    layer.msg(success['msg'])
+                    setTimeout(function () {
+                        window.open('/goods/', target = '_self')
+                    }, 800)
+                },
+                error: function (error) {
+                    layer.msg(error['msg'])
+                }
+            })
+            return false
+        });
+    });
+</script>
 </body>
 </html>

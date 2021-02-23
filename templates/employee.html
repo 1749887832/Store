@@ -18,21 +18,9 @@
                 </div>
             </div>
             <div class="layui-inline">
-                <label class="layui-form-label">薪资</label>
-                <div class="layui-input-inline" style="width: 100px;">
-                    <input type="text" id="price_min" name="price_min" placeholder="" autocomplete="off" class="layui-input"
-                           onkeyup="clearNumber(this)">
-                </div>
-                <div class="layui-form-mid">-</div>
-                <div class="layui-input-inline" style="width: 100px;">
-                    <input type="text" id="price_max" name="price_max" placeholder="" autocomplete="off" class="layui-input"
-                           onkeyup="clearNumber(this)">
-                </div>
-            </div>
-            <div class="layui-inline">
-                <label class="layui-form-label">年龄</label>
+                <label class="layui-form-label">性别</label>
                 <div class="layui-input-inline">
-                    <select id="type" name="type" lay-filter="type">
+                    <select id="sex" name="sex" lay-filter="type">
                         <option value="" selected=""></option>
                         <option value="男">男</option>
                         <option value="女">女</option>
@@ -40,14 +28,48 @@
                 </div>
             </div>
             <div class="layui-inline">
-                <label class="layui-form-label">老板</label>
+                <label class="layui-form-label">年龄</label>
+                <div class="layui-input-inline" style="width: 100px;">
+                    <input type="text" id="age_min" name="age_min" placeholder="" autocomplete="off" class="layui-input"
+                           onkeyup="clearNumber(this)">
+                </div>
+                <div class="layui-form-mid">-</div>
+                <div class="layui-input-inline" style="width: 100px;">
+                    <input type="text" id="age_max" name="age_max" placeholder="" autocomplete="off" class="layui-input"
+                           onkeyup="clearNumber(this)">
+                </div>
+            </div>
+
+
+            <div class="layui-inline">
+                <label class="layui-form-label">入职时间</label>
                 <div class="layui-input-inline">
-                    <input type="text" id="boss" name="boss" autocomplete="off" placeholder="请输入老板" class="layui-input">
+                    <input type="text" class="layui-input" id="createTime" name="createTime" placeholder="请选择入职范围">
                 </div>
             </div>
             <div class="layui-inline">
-                <button type="button" class="layui-btn" style="width: 150px" onclick="getStoreList()">搜索</button>
-                <button type="button" class="layui-btn" style="width: 150px" onclick="resttStoreList()">重置</button>
+                <label class="layui-form-label">店铺</label>
+                <div class="layui-input-inline">
+                    <select id="shopname" name="shopname" lay-filter="type">
+                        <option value="" selected=""></option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">薪资</label>
+                <div class="layui-input-inline" style="width: 100px;">
+                    <input type="text" id="salary_min" name="salary_min" placeholder="" autocomplete="off" class="layui-input"
+                           onkeyup="clearNumber(this)">
+                </div>
+                <div class="layui-form-mid">-</div>
+                <div class="layui-input-inline" style="width: 100px;">
+                    <input type="text" id="salary_max" name="salary_max" placeholder="" autocomplete="off" class="layui-input"
+                           onkeyup="clearNumber(this)">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <button type="button" class="layui-btn" style="width: 150px" onclick="getEmployeeList()">搜索</button>
+                <button type="button" class="layui-btn" style="width: 150px" onclick="resetEmployeeList()">重置</button>
             </div>
         </div>
     </form>
@@ -62,22 +84,110 @@
         <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
     </script>
 </div>
+<div class="confirm" id="confirm">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
+        <legend>修改店员信息</legend>
+    </fieldset>
+    <form class="layui-form layui-form-pane" lay-filter="updateEmployee" action="">
+        <div class="layui-form-item" style="visibility: hidden">
+            <div class="layui-input-block">
+                <input type="text" name="id" lay-verify="required" autocomplete="off" placeholder="请输入店员名" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">姓名</label>
+            <div class="layui-input-block">
+                <input type="text" name="name" lay-verify="required" autocomplete="off" placeholder="请输入店员名" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">性别</label>
+            <div class="layui-input-block">
+                <select name="sex" lay-filter="sex">
+                    <option value="男" selected="">男</option>
+                    <option value="女">女</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">年龄</label>
+            <div class="layui-input-block">
+                <input type="number" name="age" lay-verify="required" autocomplete="off" placeholder="请输入年龄" class="layui-input"
+                       onblur="if (value<=0){value=0}else{value=Math.floor(value)}">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">薪资</label>
+            <div class="layui-input-block">
+                <input type="text" name="salary" lay-verify="required" autocomplete="off" placeholder="请输入薪资" class="layui-input"
+                       onkeyup="clearNumber(this)">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">入职时间</label>
+            <div class="layui-input-inline">
+                <input type="text" class="layui-input" lay-verify="required" id="updateTime" name="updateTime" placeholder="年 - 月 - 日">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">店铺</label>
+            <div class="layui-input-block">
+                <select name="shopId" lay-filter="type" id="shopId" lay-verify="required" lay-search="">
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <button type="button" class="layui-btn layui-btn-primary" onclick="window.open('/employee/',target='_self')">返回</button>
+            <button type="submit" class="layui-btn" lay-submit="" lay-filter="update">立即提交</button>
+        </div>
+    </form>
+</div>
 </body>
 <script>
+    $(document).ready(function () {
+        $.ajax({
+            async: true,
+            url: '/showallstore/',
+            type: 'post',
+            headers: {"X-CSRFToken": $.cookie("csrftoken")},
+            data: [],
+            success: function (date) {
+                jsonDate = JSON.stringify(date['data']);
+                $.each(JSON.parse(jsonDate), function (i, item) {
+                    var option = "<option value=" + item.id + ">" + item.name + "</option>";
+                    $("#shopname").append(option);
+                    $("#shopId").append(option);
+                    renderForm();
+                    {#form.render();#}
+                });
+            },
+            error: function (msg) {
+                layer.msg(JSON.stringify(msg['msg']))
+            }
+        });
+    })
+
+    function renderForm() {
+        layui.use('form', function () {
+            var form = layui.form;
+            form.render();
+        });
+    }
+
     layui.use(['form'], function () {
         var form = layui.form
             , layer = layui.layer
         form.on('submit(update)', function (data) {
             $.ajax({
                 async: true,
-                url: '/updatestore/',
+                url: '/updateEmployee/',
                 type: 'post',
                 headers: {"X-CSRFToken": $.cookie("csrftoken")},
                 data: data.field,
                 success: function (success) {
                     layer.msg(success['msg'])
                     setTimeout(function () {
-                        window.open('/store/', target = '_self')
+                        window.open('/employee/', target = '_self')
                     }, 800)
                 },
                 error: function (error) {
@@ -94,29 +204,39 @@
         obj.value = obj.value.replace(".", "$#$").replace(/\./g, "").replace("$#$", ".");
     }
 
-    function resttStoreList() {
+    function resetEmployeeList() {
         document.getElementById('name').value = '';
-        document.getElementById('price_min').value = '';
-        document.getElementById('price_max').value = '';
-        document.getElementById('type').value = '';
-        document.getElementById('boss').value = '';
-        getStoreList()
+        document.getElementById('salary_min').value = '';
+        document.getElementById('salary_max').value = '';
+        document.getElementById('sex').value = '';
+        document.getElementById('age_min').value = '';
+        document.getElementById('age_max').value = '';
+        document.getElementById('createTime').value = '';
+        document.getElementById('shopname').value = '';
+        renderForm();
+        getEmployeeList()
     }
 
-    function getStoreList() {
+    function getEmployeeList() {
         var name = document.getElementById('name').value;
-        var price_min = document.getElementById('price_min').value;
-        var price_max = document.getElementById('price_max').value;
-        var type = document.getElementById('type').value;
-        var boss = document.getElementById('boss').value;
+        var salary_min = document.getElementById('salary_min').value;
+        var salary_max = document.getElementById('salary_max').value;
+        var sex = document.getElementById('sex').value;
+        var age_min = document.getElementById('age_min').value;
+        var age_max = document.getElementById('age_max').value;
+        var createTime = document.getElementById('createTime').value;
+        var shopId = document.getElementById('shopname').value;
         var table = layui.table;
         table.reload('test', {
             where: {
                 'name': name,
-                'price_min': price_min,
-                'price_max': price_max,
-                'type': type,
-                'boss': boss,
+                'salary_min': salary_min,
+                'salary_max': salary_max,
+                'age_min': age_min,
+                'age_max': age_max,
+                'createTime': createTime,
+                'shopId': shopId,
+                'sex': sex,
             },
             page: {
                 curr: 1
@@ -124,12 +244,23 @@
         }, 'data')
     }
 
-    layui.use('table', function () {
+    layui.use(['table', 'laydate'], function () {
+        var laydate = layui.laydate;
+        laydate.render({
+            elem: '#createTime'
+            , range: '至'
+        });
+        laydate.render({
+            elem: '#updateTime'
+        })
         var name = document.getElementById('name').value;
-        var price_min = document.getElementById('price_min').value;
-        var price_max = document.getElementById('price_max').value;
-        var type = document.getElementById('type').value;
-        var boss = document.getElementById('boss').value;
+        var salary_min = document.getElementById('salary_min').value;
+        var salary_max = document.getElementById('salary_max').value;
+        var sex = document.getElementById('sex').value;
+        var age_min = document.getElementById('age_min').value;
+        var age_max = document.getElementById('age_max').value;
+        var createTime = document.getElementById('createTime').value;
+        var shopId = document.getElementById('shopname').value;
         var table = layui.table;
         table.render({
             elem: '#test'
@@ -139,10 +270,13 @@
             , toolbar: '#toolbarDemo'
             , where: {
                 'name': name,
-                'price_min': price_min,
-                'price_max': price_max,
-                'type': type,
-                'boss': boss,
+                'salary_min': salary_min,
+                'salary_max': salary_max,
+                'age_min': age_min,
+                'age_max': age_max,
+                'createTime': createTime,
+                'shopId': shopId,
+                'sex': sex,
             }
             , defaultToolbar: []
             , title: '用户数据表'
@@ -150,10 +284,10 @@
                 {field: 'id', title: 'ID', width: '10%', fixed: 'left', unresize: true, sort: true}
                 , {field: 'name', title: '店员', width: '15%'}
                 , {field: 'sex', title: '性别', width: '10%'}
-                , {field: 'age', title: '年龄', width: '10%', sort: true}
-                , {field: 'salary', title: '薪资',width: '10%',sort: true }
-                , {field: 'createTime', title: '入职时间', }
-                , {field: 'shop', title: '所属店铺', }
+                , {field: 'age', title: '年龄', width: '10%', sort: true,templet: ({age}) => `${age}岁`}
+                , {field: 'salary', title: '薪资', width: '10%', sort: true,templet: ({salary}) => `${salary}元`}
+                , {field: 'createTime', title: '入职时间',}
+                , {field: 'shop', title: '所属店铺',}
                 , {fixed: 'right', title: '操作', toolbar: '#barDemo', width: '10%'}
             ]]
             , page: true
@@ -164,7 +298,7 @@
                 layer.confirm('确定删除该用户吗？', function (index) {
                     $.ajax({
                         async: true,
-                        url: '/delstore/',
+                        url: '/deleteemployee/',
                         type: 'post',
                         headers: {"X-CSRFToken": $.cookie("csrftoken")},
                         data: {
@@ -172,7 +306,7 @@
                         },
                         success: function (success) {
                             layer.msg(success['msg'])
-                            getStoreList()
+                            getEmployeeList()
                         },
                         error: function (error) {
                             layer.msg(error['msg'])
@@ -184,12 +318,14 @@
                 document.getElementById('confirm').style.visibility = 'visible';
                 document.getElementById('body').style.visibility = 'hidden';
                 var form = layui.form;
-                form.val("updateStore", {
+                form.val("updateEmployee", {
                     "id": data.id
                     , "name": data.name
-                    , "area": data.area
-                    , "type": data.type
-                    , "boss": data.boss
+                    , "age": data.age
+                    , "sex": data.sex
+                    , "updateTime": data.createTime
+                    , "salary": data.salary
+                    , "shopId": data.shopId
                 });
             }
         });

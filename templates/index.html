@@ -16,10 +16,10 @@
         <ul class="layui-nav layui-layout-right">
             <li class="layui-nav-item">
                 <a href="javascript:">
-                    贤心
+                    {{ date.username }}
                 </a>
             </li>
-            <li class="layui-nav-item"><a href="">退出登录</a></li>
+            <li class="layui-nav-item"><a href="/logout/">退出登录</a></li>
         </ul>
     </div>
 
@@ -42,7 +42,7 @@
                 <li class="layui-nav-item">
                     <a href="javascript:">商品管理</a>
                     <dl class="layui-nav-child">
-                        <dd><a href="javascript:">商品列表</a></dd>
+                        <dd><a href="/goods/">商品列表</a></dd>
                     </dl>
                 </li>
             </ul>
@@ -54,7 +54,6 @@
     {#    </div>#}
 </div>
 <script>
-    //JavaScript代码区域
     layui.use('element', function () {
         var element = layui.element;
 

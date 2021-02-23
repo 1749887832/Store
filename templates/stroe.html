@@ -5,7 +5,6 @@
     <title>商铺</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/store.css' %}">
 </head>
 <body>
 {% include 'index.html' %}
@@ -31,7 +30,7 @@
                 </div>
             </div>
             <div class="layui-inline">
-                <label class="layui-form-label">分组选择框</label>
+                <label class="layui-form-label">类型</label>
                 <div class="layui-input-inline">
                     <select id="type" name="type" lay-filter="type">
                         <option value="" selected=""></option>
@@ -72,7 +71,6 @@
     </fieldset>
     <form class="layui-form layui-form-pane" lay-filter="updateStore" action="">
         <div class="layui-form-item" style="visibility: hidden">
-            <label class="layui-form-label">商铺名</label>
             <div class="layui-input-block">
                 <input type="text" name="id" lay-verify="required" autocomplete="off" placeholder="请输入商铺名" class="layui-input">
             </div>
@@ -109,7 +107,8 @@
             </div>
         </div>
         <div class="layui-form-item">
-            <button type="button" class="layui-btn layui-btn-primary">取消</button>
+            <button type="button" class="layui-btn layui-btn-primary" onclick="window.open('/store/',target='_self')">取消
+            </button>
             <button type="submit" class="layui-btn" lay-submit="" lay-filter="update">提交修改</button>
         </div>
     </form>
@@ -151,7 +150,15 @@
         document.getElementById('price_max').value = '';
         document.getElementById('type').value = '';
         document.getElementById('boss').value = '';
+        renderForm();
         getStoreList()
+    }
+
+    function renderForm() {
+        layui.use('form', function () {
+            var form = layui.form;
+            form.render();
+        });
     }
 
     function getStoreList() {
@@ -201,8 +208,8 @@
                 {field: 'id', title: 'ID', width: '10%', fixed: 'left', unresize: true, sort: true}
                 , {field: 'name', title: '商铺名', width: '30%'}
                 , {field: 'type', title: '类型', width: '15%'}
-                , {field: 'area', title: '面积', width: '15%', sort: true}
-                , {field: 'boss', title: '老板', }
+                , {field: 'area', title: '面积', width: '15%', sort: true,templet: ({area}) => `${area}㎡`}
+                , {field: 'boss', title: '老板',}
                 , {fixed: 'right', title: '操作', toolbar: '#barDemo', width: '10%'}
             ]]
             , page: true

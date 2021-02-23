@@ -3,8 +3,274 @@
 <head>
     <meta charset="UTF-8">
     <title>商品模块</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/min.css' %}">
 </head>
 <body>
-    <h1>这是商品模块</h1>
+{% include 'index.html' %}
+<div class="body" id="body">
+    <form class="layui-form" action="">
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">商品名</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="name" name="name" placeholder="请输入商品名" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">类型</label>
+                <div class="layui-input-inline">
+                    <select id="type" name="type" lay-filter="type">
+                        <option value="" selected=""></option>
+                        <option value="日用品">日用品</option>
+                        <option value="服装">服装</option>
+                        <option value="水果">水果</option>
+                        <option value="体育用品">体育用品</option>
+                        <option value="其他">其他</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">店铺</label>
+                <div class="layui-input-inline">
+                    <select id="shop" name="shop" lay-filter="type">
+                        <option value="" selected=""></option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-inline">
+                <button type="button" class="layui-btn" style="width: 150px" onclick="getGoodsList()">搜索</button>
+                <button type="button" class="layui-btn" style="width: 150px" onclick="resetGoodsList()">重置</button>
+            </div>
+        </div>
+    </form>
+    <table class="layui-hide" id="test" lay-filter="test"></table>
+    <script type="text/html" id="toolbarDemo">
+        <div>
+            <button type="button" class="layui-btn" onclick="window.open('/addgoods/',target='_self')">添加商品</button>
+        </div>
+    </script>
+    <script type="text/html" id="barDemo">
+        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+</div>
+<div class="confirm" id="confirm">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
+        <legend>修改商品信息</legend>
+    </fieldset>
+    <form class="layui-form layui-form-pane" lay-filter="updateGoods" action="">
+        <div class="layui-form-item" style="visibility: hidden">
+            <div class="layui-input-block">
+                <input type="text" name="id" lay-verify="required" autocomplete="off" placeholder="请输入商品名" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">商品名</label>
+            <div class="layui-input-block">
+                <input type="text" name="name" lay-verify="required" autocomplete="off" placeholder="请输入商品名" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">商品类型</label>
+            <div class="layui-input-block">
+                <select name="type" lay-filter="type">
+                    <option value="日用品" selected="">日用品</option>
+                    <option value="服装">服装</option>
+                    <option value="水果">水果</option>
+                    <option value="体育用品">体育用品</option>
+                    <option value="其他">其他</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">商品数量</label>
+            <div class="layui-input-block">
+                <input type="number" name="sum" lay-verify="required" autocomplete="off" placeholder="请输入数量" class="layui-input"
+                       onblur="if (value<=0){value=0}else{value=Math.floor(value)}">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">进价</label>
+            <div class="layui-input-block">
+                <input type="text" name="price" lay-verify="required" autocomplete="off" placeholder="请输入进价(元)" class="layui-input"
+                       onkeyup="clearNumber(this)">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">销售价</label>
+            <div class="layui-input-block">
+                <input type="text" name="per" lay-verify="required" autocomplete="off" placeholder="请输入现售价(元)" class="layui-input"
+                       onkeyup="clearNumber(this)">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">所属店铺</label>
+            <div class="layui-input-block">
+                <select name="shopId" id="shopId" lay-filter="type">
+                    <option value="" selected=""></option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <button type="button" class="layui-btn layui-btn-primary" onclick="window.open('/goods/',target='_self')">返回</button>
+            <button type="submit" class="layui-btn" lay-submit="" lay-filter="update">立即修改</button>
+        </div>
+    </form>
+</div>
+<script>
+    layui.use(['form'], function () {
+        var form = layui.form
+            , layer = layui.layer
+        form.on('submit(update)', function (data) {
+            $.ajax({
+                async: true,
+                url: '/updategoods/',
+                type: 'post',
+                headers: {"X-CSRFToken": $.cookie("csrftoken")},
+                data: data.field,
+                success: function (success) {
+                    layer.msg(success['msg'])
+                    setTimeout(function () {
+                        window.open('/goods/', target = '_self')
+                    }, 800)
+                },
+                error: function (error) {
+                    layer.msg(error['msg'])
+                }
+            })
+            return false
+        });
+    });
+    $(document).ready(function () {
+        $.ajax({
+            async: true,
+            url: '/showallstore/',
+            type: 'post',
+            headers: {"X-CSRFToken": $.cookie("csrftoken")},
+            data: [],
+            success: function (date) {
+                jsonDate = JSON.stringify(date['data']);
+                $.each(JSON.parse(jsonDate), function (i, item) {
+                    var option = "<option value=" + item.id + ">" + item.name + "</option>";
+                    $("#shop").append(option);
+                    $("#shopId").append(option);
+                    renderForm();
+                    {#form.render();#}
+                });
+            },
+            error: function (msg) {
+                layer.msg(JSON.stringify(msg['msg']))
+            }
+        });
+    })
+
+    function clearNumber(obj) {
+        obj.value = obj.value.replace(/[^\d.]/g, "");
+        obj.value = obj.value.replace(/\.{2,}/g, ".");
+        obj.value = obj.value.replace(".", "$#$").replace(/\./g, "").replace("$#$", ".");
+    }
+
+    function renderForm() {
+        layui.use('form', function () {
+            var form = layui.form;
+            form.render();
+        });
+    }
+
+    function resetGoodsList() {
+        document.getElementById('name').value = '';
+        document.getElementById('type').value = '';
+        document.getElementById('shop').value = '';
+        renderForm();
+        getGoodsList()
+    }
+
+    function getGoodsList() {
+        var name = document.getElementById('name').value;
+        var type = document.getElementById('type').value;
+        var shop = document.getElementById('shop').value;
+        var table = layui.table;
+        table.reload('test', {
+            where: {
+                'name': name,
+                'type': type,
+                'shop': shop,
+            },
+            page: {
+                curr: 1
+            }
+        }, 'data')
+    }
+
+    layui.use('table', function () {
+        var name = document.getElementById('name').value;
+        var type = document.getElementById('type').value;
+        var shop = document.getElementById('shop').value;
+        var table = layui.table;
+        table.render({
+            elem: '#test'
+            , height: '500'
+            , method: 'post'
+            , url: '/showGoods/'
+            , toolbar: '#toolbarDemo'
+            , where: {
+                'name': name,
+                'type': type,
+                'shop': shop,
+            }
+            , defaultToolbar: []
+            , title: '用户数据表'
+            , cols: [[
+                {field: 'id', title: 'ID', width: '10%', fixed: 'left', unresize: true, sort: true}
+                , {field: 'name', title: '商品名', width: '10%'}
+                , {field: 'type', title: '类型', width: '15%'}
+                , {field: 'sum', title: '数量', width: '15%', sort: true, templet: ({sum}) => `${sum}个/件`}
+                , {field: 'price', title: '进价', width: '10%', sort: true, templet: ({price}) => `${price}元`}
+                , {field: 'per', title: '销售价', width: '10%', sort: true, templet: ({per}) => `${per}元`}
+                , {field: 'shopname', title: '所属店铺'}
+                , {fixed: 'right', title: '操作', toolbar: '#barDemo', width: '10%'}
+            ]]
+            , page: true
+        });
+        table.on('tool(test)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'del') {
+                layer.confirm('确定删除该商品吗？', function (index) {
+                    $.ajax({
+                        async: true,
+                        url: '/deletegoods/',
+                        type: 'post',
+                        headers: {"X-CSRFToken": $.cookie("csrftoken")},
+                        data: {
+                            'id': data.id
+                        },
+                        success: function (success) {
+                            layer.msg(success['msg'])
+                            getGoodsList()
+                        },
+                        error: function (error) {
+                            layer.msg(error['msg'])
+                        }
+                    })
+                    layer.close(index);
+                });
+            } else if (obj.event === 'edit') {
+                document.getElementById('confirm').style.visibility = 'visible';
+                document.getElementById('body').style.visibility = 'hidden';
+                var form = layui.form;
+                form.val("updateGoods", {
+                    "id": data.id
+                    , "name": data.name
+                    , "type": data.type
+                    , "sum": data.sum
+                    , "price": data.price
+                    , "per": data.per
+                    , "shopId": data.shopId
+                });
+            }
+        });
+    });
+</script>
 </body>
 </html>

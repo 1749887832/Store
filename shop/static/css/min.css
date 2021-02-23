@@ -18,3 +18,12 @@ input::-webkit-inner-spin-button {
 input[type="number"] {
     -moz-appearance: textfield;
 }
+.confirm {
+    float: left;
+    width: 180vh;
+    height: 100vh;
+    padding: 20px;
+    margin-left: 200px;
+    visibility: hidden;
+    position: absolute;
+}
