@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/3.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -72,17 +72,22 @@ WSGI_APPLICATION = 'Store.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'shop',  # 数据库名称
+#         'HOST': 'localhost',  # 数据库主机
+#         'PORT': '3306',  # 数据库端口
+#         'USER': 'root',  # 数据库用户名
+#         'PASSWORD': '123',  # 数据库密码
+#     }
+# }
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'shop',  # 数据库名称
-        'HOST': 'localhost',  # 数据库主机
-        'PORT': '3306',  # 数据库端口
-        'USER': 'root',  # 数据库用户名
-        'PASSWORD': '123',  # 数据库密码
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
